@@ -468,6 +468,8 @@ body.dark-mode #error {
   z-index: 50;
   background: transparent;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent; /* remove tap flash on mobile/e-ink */
+  user-select: none;
 }
 
 .click-zone-left {
