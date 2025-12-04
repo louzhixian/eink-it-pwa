@@ -9,9 +9,10 @@ let contentElement = null;
 let pageOverlap = 40; // px of overlap, dynamic per computed line height
 let pageStride = 0;
 let chromeHideTimer = null;
-const CHROME_VISIBLE_MS = 3000;
+const CHROME_VISIBLE_MS = 4000;
 const MIN_HEADER_SPACE = 16;
 const MIN_FOOTER_SPACE = 12;
+let currentArticleId = null; // Store current article ID for progress tracking
 
 // Default settings - auto-detect Chinese language
 const defaultSettings = {
@@ -38,6 +39,7 @@ async function initReader() {
     // Get article ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const articleId = urlParams.get('id');
+    currentArticleId = articleId; // Store for progress tracking
 
     if (!articleId) {
       showError('No article ID provided.');
@@ -93,10 +95,12 @@ async function initReader() {
     setTimeout(() => {
       refitTitle();
       calculatePagination();
+      restoreReadingProgress(); // Restore saved reading position
       setupNavigation();
       setupSettingsPanel();
       setupDarkMode();
       setupBackButton();
+      setupPageNavigation(); // Setup page navigation modal
       setupChromeVisibility();
       updateClickZones();
     }, 100);
@@ -202,7 +206,43 @@ function goToPage(pageNumber) {
   // Update page indicator
   document.getElementById('current-page').textContent = currentPage;
 
+  // Save reading progress
+  saveReadingProgress();
+
   console.log(`Navigated to page ${currentPage} (scroll: ${scrollPosition}px)`);
+}
+
+// Save reading progress to localStorage
+function saveReadingProgress() {
+  if (!currentArticleId) return;
+
+  try {
+    const progressKey = `reading_progress_${currentArticleId}`;
+    localStorage.setItem(progressKey, currentPage.toString());
+    console.log(`Saved reading progress: article ${currentArticleId}, page ${currentPage}`);
+  } catch (error) {
+    console.error('Error saving reading progress:', error);
+  }
+}
+
+// Restore reading progress from localStorage
+function restoreReadingProgress() {
+  if (!currentArticleId) return;
+
+  try {
+    const progressKey = `reading_progress_${currentArticleId}`;
+    const savedPage = localStorage.getItem(progressKey);
+
+    if (savedPage) {
+      const pageNumber = parseInt(savedPage, 10);
+      if (pageNumber > 1 && pageNumber <= totalPages) {
+        console.log(`Restoring reading progress: jumping to page ${pageNumber}`);
+        goToPage(pageNumber);
+      }
+    }
+  } catch (error) {
+    console.error('Error restoring reading progress:', error);
+  }
 }
 
 // Navigation functions
@@ -296,6 +336,80 @@ function setupBackButton() {
     backBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       window.location.href = 'list.html';
+    });
+  }
+}
+
+// Setup page navigation modal
+function setupPageNavigation() {
+  const pageInfoBtn = document.getElementById('page-info-btn');
+  const modal = document.getElementById('page-nav-modal');
+  const closeBtn = document.getElementById('close-page-nav-modal');
+  const jumpFirstBtn = document.getElementById('jump-first-page');
+  const jumpLastBtn = document.getElementById('jump-last-page');
+  const jumpInput = document.getElementById('page-jump-number');
+  const jumpBtn = document.getElementById('page-jump-btn');
+
+  if (!pageInfoBtn || !modal) return;
+
+  // Open modal
+  pageInfoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    jumpInput.value = currentPage;
+    jumpInput.max = totalPages;
+    modal.style.display = 'flex';
+  });
+
+  // Close modal
+  const closeModal = () => {
+    modal.style.display = 'none';
+  };
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
+
+  // Close on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Jump to first page
+  if (jumpFirstBtn) {
+    jumpFirstBtn.addEventListener('click', () => {
+      goToPage(1);
+      closeModal();
+    });
+  }
+
+  // Jump to last page
+  if (jumpLastBtn) {
+    jumpLastBtn.addEventListener('click', () => {
+      goToPage(totalPages);
+      closeModal();
+    });
+  }
+
+  // Jump to specific page
+  if (jumpBtn && jumpInput) {
+    const performJump = () => {
+      const pageNum = parseInt(jumpInput.value, 10);
+      if (pageNum >= 1 && pageNum <= totalPages) {
+        goToPage(pageNum);
+        closeModal();
+      } else {
+        alert(`Please enter a page number between 1 and ${totalPages}`);
+      }
+    };
+
+    jumpBtn.addEventListener('click', performJump);
+
+    jumpInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performJump();
+      }
     });
   }
 }

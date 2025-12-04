@@ -24,12 +24,16 @@
         <footer id="reader-footer">
           <div class="left-controls">
             <button id="back-btn" title="Back to List">← Back</button>
+          </div>
+          <div class="center-controls">
             <button id="settings-btn" title="Settings">A</button>
             <button id="dark-mode-btn" title="Toggle Dark Mode">◐</button>
           </div>
-          <div id="page-info">
-            <span id="current-page">1</span> / <span id="total-pages">1</span>
-      </div>
+          <div class="right-controls">
+            <button id="page-info-btn" title="Jump to Page">
+              <span id="current-page">1</span> / <span id="total-pages">1</span>
+            </button>
+          </div>
     </footer>
     <!-- Hot zone to bring header/footer back when hidden -->
     <div id="chrome-reveal-zone" class="chrome-reveal-zone"></div>
@@ -92,6 +96,27 @@
       <div class="modal-footer">
         <button id="save-settings" class="btn-primary">Save</button>
         <button id="cancel-settings" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Navigation Modal -->
+  <div id="page-nav-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Jump to Page</h2>
+        <button id="close-page-nav-modal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="page-nav-actions">
+          <button id="jump-first-page" class="btn-secondary">⇤ First Page</button>
+          <button id="jump-last-page" class="btn-secondary">Last Page ⇥</button>
+        </div>
+        <div class="page-jump-input">
+          <label for="page-jump-number">Go to page:</label>
+          <input type="number" id="page-jump-number" min="1" value="1">
+          <button id="page-jump-btn" class="btn-primary">Go</button>
+        </div>
       </div>
     </div>
   </div>
