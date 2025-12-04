@@ -30,6 +30,17 @@
     </div>
   </main>
 
+  <!-- Delete confirm modal -->
+  <div id="delete-confirm-modal" class="confirm-modal" style="display: none;">
+    <div class="confirm-dialog">
+      <p id="delete-confirm-text">Delete this article?</p>
+      <div class="confirm-actions">
+        <button id="delete-cancel-btn" class="btn-secondary" type="button">Cancel</button>
+        <button id="delete-confirm-btn" class="btn-danger" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script src="lib/supabase.js"></script>
   <script src="js/config.js"></script>
   <script src="js/list.js"></script>

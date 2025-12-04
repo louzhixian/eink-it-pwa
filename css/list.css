@@ -47,6 +47,10 @@ main {
   cursor: pointer;
   background-color: #fff;
   transition: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
 }
 
 .article-item:hover {
@@ -73,6 +77,60 @@ main {
 .article-item .date {
   color: #999;
   font-size: 13px;
+}
+
+.article-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.article-meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.date-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-divider {
+  color: #666;
+  font-size: 12px;
+}
+
+.progress {
+  font-size: 13px;
+  color: #000;
+  font-weight: 700;
+}
+
+.article-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.delete-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-color: #d00;
+  color: #d00;
+  background-color: #fff;
+}
+
+.delete-btn:hover {
+  background-color: #d00;
+  color: #fff;
+}
+
+.delete-btn:active {
+  transform: scale(0.98);
 }
 
 .empty-state {
@@ -124,4 +182,51 @@ main {
   .article-item h3 {
     font-size: 18px;
   }
+}
+
+/* Confirm modal */
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 200;
+}
+
+.confirm-dialog {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 24px;
+  max-width: 360px;
+  width: calc(100% - 40px);
+  box-shadow: 8px 8px 0 #000;
+}
+
+.confirm-dialog p {
+  margin-bottom: 18px;
+  font-size: 16px;
+  color: #000;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+}
+
+.btn-danger {
+  border-color: #d00;
+  color: #d00;
+  background: #fff;
+}
+
+.btn-danger:hover {
+  background: #d00;
+  color: #fff;
 }

@@ -77,6 +77,7 @@ async function initReader() {
 
     document.getElementById('article-byline').textContent = article.byline || '';
     document.getElementById('article-site').textContent = article.site_name || '';
+    updateMetaSeparators();
 
     contentElement = document.getElementById('reader-content');
     contentElement.innerHTML = article.content;
@@ -218,8 +219,9 @@ function saveReadingProgress() {
 
   try {
     const progressKey = `reading_progress_${currentArticleId}`;
-    localStorage.setItem(progressKey, currentPage.toString());
-    console.log(`Saved reading progress: article ${currentArticleId}, page ${currentPage}`);
+    const payload = { page: currentPage, total: totalPages };
+    localStorage.setItem(progressKey, JSON.stringify(payload));
+    console.log(`Saved reading progress: article ${currentArticleId}, page ${currentPage}, total ${totalPages}`);
   } catch (error) {
     console.error('Error saving reading progress:', error);
   }
@@ -231,11 +233,18 @@ function restoreReadingProgress() {
 
   try {
     const progressKey = `reading_progress_${currentArticleId}`;
-    const savedPage = localStorage.getItem(progressKey);
+    const saved = localStorage.getItem(progressKey);
 
-    if (savedPage) {
-      const pageNumber = parseInt(savedPage, 10);
-      if (pageNumber > 1 && pageNumber <= totalPages) {
+    if (saved) {
+      let pageNumber = null;
+      try {
+        const parsed = JSON.parse(saved);
+        pageNumber = parsed && parsed.page ? parseInt(parsed.page, 10) : null;
+      } catch {
+        pageNumber = parseInt(saved, 10); // backward compatibility
+      }
+
+      if (pageNumber && pageNumber > 1 && pageNumber <= totalPages) {
         console.log(`Restoring reading progress: jumping to page ${pageNumber}`);
         goToPage(pageNumber);
       }
@@ -533,6 +542,26 @@ function refitTitle() {
 
   // Fit again on next frame to catch late layout changes (fonts/padding)
   requestAnimationFrame(() => fitTitleToWidth(el));
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+function updateMetaSeparators() {
+  const bylineText = (document.getElementById('article-byline')?.textContent || '').trim();
+  const siteText = (document.getElementById('article-site')?.textContent || '').trim();
+
+  const bsDivider = document.getElementById('meta-divider-byline-site');
+
+  if (bsDivider) {
+    bsDivider.style.display = bylineText && siteText ? 'inline-flex' : 'none';
+  }
 }
 
 // Load settings from localStorage

@@ -77,11 +77,20 @@ body {
   font-size: 14px;
   color: #333;
   font-style: italic;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-#article-byline:not(:empty)::after {
-  content: ' • ';
-  margin: 0 8px;
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.meta-divider {
+  color: #666;
+  margin: 0 4px;
 }
 
 /* Content Area - Main reading area with hidden scroll */
