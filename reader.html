@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading - Eink-It</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/reader.css">
+</head>
+<body>
+  <div id="reader-container">
+    <header id="reader-header">
+      <h1 id="article-title">Loading...</h1>
+      <div id="article-meta">
+        <span id="article-byline"></span>
+        <span id="article-site"></span>
+      </div>
+    </header>
+
+    <main id="reader-content">
+      <!-- Article content will be dynamically inserted here -->
+    </main>
+
+    <footer id="reader-footer">
+      <div id="page-info">
+        Page <span id="current-page">1</span> / <span id="total-pages">1</span>
+      </div>
+      <div class="button-group">
+        <button id="settings-btn" title="Settings">A</button>
+        <button id="dark-mode-btn" title="Toggle Dark Mode">◐</button>
+        <button id="back-btn" title="Back to List">←</button>
+      </div>
+      <div id="navigation-hint">
+        ← → or click to navigate
+      </div>
+    </footer>
+  </div>
+
+  <!-- Click zones for navigation -->
+  <div class="click-zone click-zone-left" id="prev-zone"></div>
+  <div class="click-zone click-zone-right" id="next-zone"></div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Reading Settings</h2>
+        <button id="close-modal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-item">
+          <label for="font-size">Font Size:</label>
+          <select id="font-size">
+            <option value="14">14px</option>
+            <option value="16">16px</option>
+            <option value="18" selected>18px</option>
+            <option value="20">20px</option>
+            <option value="22">22px</option>
+            <option value="24">24px</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label for="font-family">Font Family:</label>
+          <select id="font-family">
+            <option value="Georgia, serif" selected>Georgia</option>
+            <option value="'Times New Roman', Times, serif">Times New Roman</option>
+            <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
+            <option value="'Arial', sans-serif">Arial</option>
+            <option value="'Helvetica', sans-serif">Helvetica</option>
+            <option value="'LXGW WenKai', serif">霞鹜文楷 (LxgwWenKai)</option>
+            <option value="'Noto Serif SC', serif">思源宋体 (Noto Serif SC)</option>
+            <option value="FangSong, STFangsong, serif">仿宋 (FangSong)</option>
+            <option value="'PingFang SC', 'Microsoft YaHei', sans-serif">苹方/微软雅黑</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label for="line-height">Line Height:</label>
+          <select id="line-height">
+            <option value="1.4">1.4</option>
+            <option value="1.5">1.5</option>
+            <option value="1.6">1.6</option>
+            <option value="1.7" selected>1.7</option>
+            <option value="1.8">1.8</option>
+            <option value="2.0">2.0</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="save-settings" class="btn-primary">Save</button>
+        <button id="cancel-settings" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading">Loading article...</div>
+  <div id="error" style="display: none;">Failed to load article content.</div>
+
+  <script src="lib/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Articles - Eink-It</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/list.css">
+</head>
+<body>
+  <header>
+    <h1>My Articles</h1>
+    <div>
+      <span id="user-email" style="margin-right: 15px; color: #666;"></span>
+      <button id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="loading" class="loading">Loading articles...</div>
+    <div id="error" style="display: none;" class="error"></div>
+    <div id="articles-list"></div>
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <h2>No articles yet</h2>
+      <p>Install the Eink-It browser extension to start converting web articles.</p>
+      <p style="margin-top: 20px;">
+        <a href="https://github.com/yourusername/eink-it" target="_blank">Get the Extension</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="lib/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/list.js"></script>
+</body>
+</html>

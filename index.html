@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eink-It Login</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <div class="login-container">
+    <h1>Eink-It</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: #666;">
+      E-ink optimized reading for your articles
+    </p>
+
+    <div id="message" style="display: none;"></div>
+
+    <!-- 登录表单 -->
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required autofocus>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+
+    <p>
+      Don't have an account?
+      <button type="button" class="form-toggle" id="show-signup">Sign up</button>
+    </p>
+
+    <!-- 注册表单（默认隐藏）-->
+    <form id="signup-form" style="display: none;">
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password (min 6 characters)" required minlength="6">
+      <input type="password" id="signup-password-confirm" placeholder="Confirm Password" required minlength="6">
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <p id="back-to-login" style="display: none;">
+      Already have an account?
+      <button type="button" class="form-toggle" id="show-login">Login</button>
+    </p>
+  </div>
+
+  <script src="lib/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
