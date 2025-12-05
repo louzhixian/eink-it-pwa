@@ -1,22 +1,40 @@
-// Common JavaScript for offline status detection
-// Updates the offline badge visibility based on network status
+// Common connectivity utilities used across pages
+let cachedConnectivity = navigator.onLine !== false;
 
-function updateOnlineStatus() {
-  const badge = document.getElementById('offlineBadge');
-
-  if (!badge) {
-    return; // Badge not present on this page
+async function determineOfflineStatus() {
+  // navigator.onLine may be unreliable on some browsers; use a tiny probe
+  if (navigator.onLine === false) {
+    cachedConnectivity = false;
+    return true;
   }
 
-  if (!navigator.onLine) {
-    // Device is offline
-    badge.style.display = 'inline-block';
-    console.log('Device is offline - showing badge');
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    await fetch('https://www.gstatic.com/generate_204', {
+      method: 'GET',
+      cache: 'no-store',
+      mode: 'no-cors',
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    cachedConnectivity = true;
+    return false;
+  } catch (error) {
+    console.warn('Connectivity probe failed, assuming offline:', error);
+    cachedConnectivity = false;
+    return true;
+  }
+}
+
+async function updateOnlineStatus() {
+  const offline = await determineOfflineStatus();
+  if (offline) {
+    showOfflineBadge();
   } else {
-    // Device is online
-    badge.style.display = 'none';
-    console.log('Device is online - hiding badge');
+    hideOfflineBadge();
   }
+  return offline;
 }
 
 // Show offline badge programmatically (for explicit offline states)
@@ -35,10 +53,7 @@ function hideOfflineBadge() {
   }
 }
 
-// Listen for online/offline events
+// Listen for online/offline events and recheck with probe
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 window.addEventListener('load', updateOnlineStatus);
-
-// Log initial status
-console.log('Initial online status:', navigator.onLine);

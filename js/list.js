@@ -13,6 +13,9 @@ const deleteCancelBtn = document.getElementById('delete-cancel-btn');
 
 let articlesCache = [];
 let pendingDeleteId = null;
+let offlineMode = false;
+let cachedArticleIds = new Set();
+let cachedArticles = [];
 
 // 检查登录状态并获取用户信息
 async function checkAuth() {
@@ -42,6 +45,18 @@ async function loadArticles() {
     articlesListEl.innerHTML = '';
     emptyStateEl.style.display = 'none';
 
+    // 更新离线状态与本地缓存索引
+    await refreshOfflineState();
+    await refreshCachedArticles();
+
+    // 离线模式下使用本地缓存
+    if (offlineMode) {
+      articlesCache = cachedArticles;
+      loadingEl.style.display = 'none';
+      renderArticles(articlesCache);
+      return;
+    }
+
     // 从 Supabase 获取文章列表
     const { data: articles, error } = await supabase
       .from('articles')
@@ -65,6 +80,11 @@ async function loadArticles() {
     loadingEl.style.display = 'none';
     errorEl.style.display = 'block';
     errorEl.textContent = 'Failed to load articles: ' + (error.message || 'Unknown error');
+
+    // 回退到本地缓存
+    if (cachedArticles.length) {
+      renderArticles(cachedArticles);
+    }
   }
 }
 
@@ -78,16 +98,14 @@ function renderArticles(articles) {
 
   emptyStateEl.style.display = 'none';
 
-  articles.forEach(async (article) => {
+  articles.forEach((article) => {
     const item = document.createElement('div');
     item.className = 'article-item';
 
-    // Check if article is cached for offline access
-    const isOffline = !navigator.onLine;
-    const isCached = await checkArticleDownloaded(article.id);
+    const isCached = cachedArticleIds.has(article.id);
 
     // If offline and not cached, disable the article item
-    if (isOffline && !isCached) {
+    if (offlineMode && !isCached) {
       item.classList.add('offline-disabled');
       item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -151,20 +169,25 @@ function renderArticles(articles) {
           // Already downloaded, clicking removes from cache
           if (confirm('Remove this article from offline cache?')) {
             await removeArticleFromCache(article.id, downloadBtn);
+            renderArticles(articlesCache);
           }
         } else {
           // Not downloaded, clicking downloads it
           await downloadArticleToCache(article.id, downloadBtn);
+          renderArticles(articlesCache);
         }
       }
     );
 
     // Check if article is already downloaded and update button state
-    checkArticleDownloaded(article.id).then(isDownloaded => {
-      if (isDownloaded) {
-        updateDownloadButton(downloadBtn, 'downloaded');
-      }
-    });
+    if (isCached) {
+      updateDownloadButton(downloadBtn, 'downloaded');
+    }
+
+    if (offlineMode && !isCached) {
+      downloadBtn.disabled = true;
+      downloadBtn.title = 'Offline - connect to download';
+    }
 
     // Delete button (icon)
     const deleteBtn = createIconButton(
@@ -324,6 +347,8 @@ async function downloadArticleToCache(articleId, button) {
 
     // Save to IndexedDB
     await saveArticleOffline(article);
+    cachedArticleIds.add(articleId);
+    localStorage.setItem('offline_cache_dirty', 'true');
 
     // Update button to downloaded state
     updateDownloadButton(button, 'downloaded');
@@ -341,6 +366,8 @@ async function downloadArticleToCache(articleId, button) {
 async function removeArticleFromCache(articleId, button) {
   try {
     await deleteArticleOffline(articleId);
+    cachedArticleIds.delete(articleId);
+    localStorage.setItem('offline_cache_dirty', 'true');
     updateDownloadButton(button, 'not-downloaded');
     console.log('Article removed from offline cache:', articleId);
   } catch (error) {
@@ -397,6 +424,25 @@ function createIconButton(className, title, svgPath, handler) {
   return button;
 }
 
+async function refreshCachedArticles() {
+  try {
+    cachedArticles = await getAllArticlesOffline();
+    cachedArticleIds = new Set((cachedArticles || []).map(article => article.id));
+  } catch (error) {
+    console.error('Failed to refresh cached articles:', error);
+    cachedArticles = [];
+    cachedArticleIds = new Set();
+  }
+}
+
+async function refreshOfflineState() {
+  offlineMode = await updateOnlineStatus();
+}
+
+async function handleConnectivityChange() {
+  await loadArticles();
+}
+
 // 页面加载时初始化
 (async function init() {
   const user = await checkAuth();
@@ -405,3 +451,27 @@ function createIconButton(className, title, svgPath, handler) {
     await loadArticles();
   }
 })();
+
+window.addEventListener('online', handleConnectivityChange);
+window.addEventListener('offline', handleConnectivityChange);
+
+// Refresh cache state when returning from reader or tab focus
+window.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    refreshCacheIfDirty();
+  }
+});
+
+window.addEventListener('focus', () => {
+  refreshCacheIfDirty();
+});
+
+async function refreshCacheIfDirty() {
+  const dirty = localStorage.getItem('offline_cache_dirty');
+  if (!dirty) return;
+  localStorage.removeItem('offline_cache_dirty');
+
+  await refreshCachedArticles();
+  const source = articlesCache.length ? articlesCache : cachedArticles;
+  renderArticles(source);
+}

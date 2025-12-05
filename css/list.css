@@ -265,25 +265,9 @@ main {
   fill: currentColor;
 }
 
-.icon-btn:hover {
-  background: currentColor;
-}
-
-.icon-btn:hover svg {
-  fill: #fff;
-}
-
 .icon-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.icon-btn:disabled:hover {
-  background: #fff;
-}
-
-.icon-btn:disabled:hover svg {
-  fill: currentColor;
 }
 
 /* Download button states */

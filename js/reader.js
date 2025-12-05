@@ -55,11 +55,14 @@ async function initReader() {
     let loadedFromCache = false;
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
       const { data, error } = await supabase
         .from('articles')
         .select('*')
         .eq('id', articleId)
         .single();
+      clearTimeout(timeout);
 
       if (error) throw error;
 
@@ -70,7 +73,13 @@ async function initReader() {
         const isDownloaded = await checkArticleDownloaded(articleId);
         if (isDownloaded) {
           await saveArticleOffline(article);
+          localStorage.setItem('offline_cache_dirty', 'true');
           console.log('Updated cached article with fresh data');
+        } else {
+          // Auto-cache after first successful view
+          await saveArticleOffline(article);
+          localStorage.setItem('offline_cache_dirty', 'true');
+          console.log('Article auto-cached for offline use');
         }
       }
     } catch (error) {

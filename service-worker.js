@@ -102,6 +102,16 @@ self.addEventListener('fetch', (event) => {
            url.hostname.includes('jsdelivr.net')) {
     event.respondWith(staleWhileRevalidate(request, FONT_CACHE));
   }
+  // Navigation requests: serve list.html as fallback when offline
+  else if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(async () => {
+        const cache = await caches.open(STATIC_CACHE);
+        const fallback = await cache.match('/list.html');
+        return fallback || Response.error();
+      })
+    );
+  }
   // Default: Network only (for other requests)
   else {
     event.respondWith(fetch(request));
