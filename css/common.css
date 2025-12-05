@@ -36,11 +36,6 @@ button {
   transition: none;
 }
 
-button:hover {
-  background-color: #000;
-  color: #fff;
-}
-
 button:active {
   transform: scale(0.98);
 }

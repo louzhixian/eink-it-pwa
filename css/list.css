@@ -137,11 +137,6 @@ main {
   background-color: #fff;
 }
 
-.delete-btn:hover {
-  background-color: #d00;
-  color: #fff;
-}
-
 .delete-btn:active {
   transform: scale(0.98);
 }
@@ -239,11 +234,6 @@ main {
   background: #fff;
 }
 
-.btn-danger:hover {
-  background: #d00;
-  color: #fff;
-}
-
 /* Icon buttons */
 .icon-btn {
   width: 40px;
@@ -263,6 +253,13 @@ main {
   width: 20px;
   height: 20px;
   fill: currentColor;
+}
+
+.icon-btn:focus,
+.icon-btn:active {
+  background: #fff;
+  color: inherit;
+  outline: none;
 }
 
 .icon-btn:disabled {

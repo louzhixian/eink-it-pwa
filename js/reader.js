@@ -155,19 +155,44 @@ async function initReader() {
 function setupImageErrorHandling() {
   const images = document.querySelectorAll('#reader-content img');
 
+  const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
+  const markBroken = (img) => {
+    if (img.dataset.brokenHandled === 'true') return;
+    const altText = (img.getAttribute('alt') || '').trim();
+    const placeholder = document.createElement('div');
+    placeholder.className = 'broken-placeholder';
+    const titleEl = document.createElement('div');
+    titleEl.className = 'broken-placeholder-text';
+    titleEl.textContent = altText || 'Image';
+    const noteEl = document.createElement('div');
+    noteEl.className = 'broken-placeholder-note';
+    noteEl.textContent = '(Image not available offline)';
+    placeholder.appendChild(titleEl);
+    placeholder.appendChild(noteEl);
+
+    // Maintain sizing similar to images
+    placeholder.style.maxWidth = img.style.maxWidth || '100%';
+    placeholder.style.maxHeight = img.style.maxHeight || '400px';
+    placeholder.style.margin = img.style.margin || '30px auto';
+
+    img.dataset.brokenHandled = 'true';
+    img.replaceWith(placeholder);
+  };
+
   images.forEach(img => {
     // Add error handler to mark broken images
     img.addEventListener('error', function() {
       console.log('Image failed to load:', this.src);
-      this.classList.add('broken-image');
-    });
+      markBroken(this);
+    }, { passive: true });
 
     // If image is already in error state (e.g., offline), mark it immediately
     if (!img.complete || img.naturalHeight === 0) {
       // Check after a short delay to see if image loaded
       setTimeout(() => {
         if (!img.complete || img.naturalHeight === 0) {
-          img.classList.add('broken-image');
+          markBroken(img);
         }
       }, 1000);
     }
@@ -352,9 +377,45 @@ function setupNavigation() {
     }
   });
 
-  // Mouse click navigation zones
+  // Mouse/touch navigation zones
   const prevZone = document.getElementById('prev-zone');
   const nextZone = document.getElementById('next-zone');
+
+  const handleZoneTap = (dir) => {
+    if (dir === 'prev') previousPage();
+    else nextPage();
+  };
+
+  const attachZone = (zoneEl, dir) => {
+    let startX = 0;
+    let startY = 0;
+    let moved = false;
+
+    zoneEl.addEventListener('pointerdown', (e) => {
+      startX = e.clientX;
+      startY = e.clientY;
+      moved = false;
+    }, { passive: true });
+
+    zoneEl.addEventListener('pointermove', (e) => {
+      if (Math.abs(e.clientX - startX) > 6 || Math.abs(e.clientY - startY) > 6) {
+        moved = true;
+      }
+    }, { passive: true });
+
+    zoneEl.addEventListener('pointerup', (e) => {
+      if (moved) return; // treat as scroll/swipe, let it pass
+      // Check for buttons or modal
+      if (e.target.closest('button') || e.target.closest('.modal')) {
+        return;
+      }
+      e.preventDefault();
+      handleZoneTap(dir);
+    });
+  };
+
+  attachZone(prevZone, 'prev');
+  attachZone(nextZone, 'next');
 
   prevZone.addEventListener('click', (e) => {
     // Check for buttons or modal
