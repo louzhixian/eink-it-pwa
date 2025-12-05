@@ -417,23 +417,6 @@ function setupNavigation() {
   attachZone(prevZone, 'prev');
   attachZone(nextZone, 'next');
 
-  prevZone.addEventListener('click', (e) => {
-    // Check for buttons or modal
-    if (e.target.closest('button') || e.target.closest('.modal')) {
-      return;
-    }
-    e.preventDefault();
-    previousPage();
-  });
-
-  nextZone.addEventListener('click', (e) => {
-    // Check for buttons or modal
-    if (e.target.closest('button') || e.target.closest('.modal')) {
-      return;
-    }
-    e.preventDefault();
-    nextPage();
-  });
 
   // Recalculate pagination on window resize
   let resizeTimeout;
