@@ -14,11 +14,11 @@ let currentArticleId = null; // Store current article ID for progress tracking
 
 // Default settings - auto-detect Chinese language
 const defaultSettings = {
-  fontSize: '24',
+  fontSize: '20',
   fontFamily: navigator.language.startsWith('zh')
     ? "'LXGW WenKai', serif"  // Chinese default
     : 'Georgia, serif',        // Western default
-  lineHeight: '1.7',
+  lineHeight: '1.5',
   darkMode: false
 };
 
