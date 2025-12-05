@@ -3,6 +3,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 body {
@@ -17,11 +19,6 @@ body {
 /* 隐藏滚动条但保持功能 */
 ::-webkit-scrollbar {
   display: none;
-}
-
-* {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 /* 按钮通用样式 */
@@ -71,18 +68,19 @@ a:hover {
 }
 
 /* 加载和错误提示 */
-.loading,
-.error {
+.loading {
   text-align: center;
   padding: 40px 20px;
   font-size: 18px;
 }
 
 .error {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
   color: #d00;
   border: 2px solid #d00;
   margin: 20px;
-  padding: 20px;
 }
 
 /* Offline badge (subtle indicator in header) */

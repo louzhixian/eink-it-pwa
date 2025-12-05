@@ -723,11 +723,6 @@ body.dark-mode #error {
   pointer-events: none;
 }
 
-#reader-footer.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .chrome-reveal-zone {
   position: fixed;
   left: 30%;

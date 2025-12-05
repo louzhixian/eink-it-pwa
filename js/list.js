@@ -294,6 +294,25 @@ async function handleDeleteConfirmed() {
   }
 }
 
+// 设置模态框处理
+const settingsModal = document.getElementById('settings-modal');
+const settingsBtn = document.getElementById('settings-btn');
+const closeSettingsBtn = document.getElementById('close-settings');
+
+settingsBtn.addEventListener('click', () => {
+  settingsModal.style.display = 'flex';
+});
+
+closeSettingsBtn.addEventListener('click', () => {
+  settingsModal.style.display = 'none';
+});
+
+settingsModal.addEventListener('click', (e) => {
+  if (e.target === settingsModal) {
+    settingsModal.style.display = 'none';
+  }
+});
+
 // 登出处理
 document.getElementById('logout-btn').addEventListener('click', async () => {
   const confirmed = confirm('Are you sure you want to logout?');
@@ -301,6 +320,57 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   if (confirmed) {
     await supabase.auth.signOut();
     window.location.href = 'index.html';
+  }
+});
+
+// 清除缓存并重载
+document.getElementById('clear-cache-btn').addEventListener('click', async () => {
+  const confirmed = confirm(
+    'This will clear all cached data including:\n\n' +
+    '• Static files (HTML, CSS, JS)\n' +
+    '• Service Worker cache\n' +
+    '• App settings\n\n' +
+    'Downloaded articles will be preserved.\n' +
+    'The app will reload immediately. Continue?'
+  );
+
+  if (!confirmed) return;
+
+  try {
+    console.log('Clearing all caches...');
+
+    // Delete all caches
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map(name => caches.delete(name)));
+    console.log('Caches cleared:', cacheNames);
+
+    // Clear localStorage (except auth session and offline notices)
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      // Keep Supabase auth and offline-related flags
+      if (!key.startsWith('sb-') && key !== 'offline_image_notice_shown' && key !== 'offline_cache_dirty') {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    console.log('LocalStorage cleared:', keysToRemove);
+
+    // Unregister service worker
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+      console.log('Service worker unregistered');
+    }
+
+    // Force reload (hard refresh)
+    alert('Cache cleared successfully. The app will reload now.');
+    window.location.reload(true);
+  } catch (error) {
+    console.error('Failed to clear cache:', error);
+    alert('Failed to clear cache: ' + error.message);
   }
 });
 

@@ -24,20 +24,30 @@ eink-it-pwa/
 ├── list.html               # 文章列表页面
 ├── reader.html             # 阅读器页面
 ├── manifest.json           # PWA 清单
+├── service-worker.js       # Service Worker（离线支持）
 ├── vercel.json             # 部署配置
 ├── package.json            # 项目配置
+├── icons/                  # PWA 图标集
+│   ├── favicon.ico
+│   ├── favicon.svg
+│   ├── favicon-96x96.png
+│   ├── icon-180.png        # Apple Touch Icon
+│   ├── icon-192.png        # Android Chrome
+│   └── icon-512.png        # 高清图标
 ├── css/
-│   ├── common.css          # 通用样式
+│   ├── common.css          # 通用样式 + 离线徽章
 │   ├── login.css           # 登录页样式
-│   ├── list.css            # 列表页样式
-│   └── reader.css          # 阅读器核心样式 (11KB)
+│   ├── list.css            # 列表页样式 + 下载按钮
+│   └── reader.css          # 阅读器核心样式 + 图片降级
 ├── js/
 │   ├── config.js           # Supabase 配置
-│   ├── auth.js             # 认证逻辑 (4KB)
-│   ├── list.js             # 列表管理 (3KB)
-│   └── reader.js           # 阅读器核心 (17KB)
+│   ├── auth.js             # 认证逻辑
+│   ├── common.js           # 离线状态检测（增强版）
+│   ├── offline-cache.js    # IndexedDB 离线缓存
+│   ├── list.js             # 列表管理 + 离线下载
+│   └── reader.js           # 阅读器核心 + 离线加载
 └── lib/
-    └── supabase.js         # Supabase SDK (本地化)
+    └── supabase.js         # Supabase SDK（本地化）
 ```
 
 ---
@@ -55,9 +65,24 @@ eink-it-pwa/
 - ✅ 从 Supabase 实时加载文章
 - ✅ 按创建时间倒序排列
 - ✅ 显示元数据：标题、作者、网站、日期
+- ✅ 显示阅读进度百分比（已读/总页数）
 - ✅ 点击跳转到阅读器
 - ✅ 支持加载最多 50 篇文章
 - ✅ 空状态提示
+- ✅ **离线模式支持**：
+  - 自动切换到本地缓存
+  - 未缓存文章灰显禁用
+  - 点击提示需要下载或联网
+
+### 2.1 离线下载功能（⭐ 新增）
+- ✅ **手动下载按钮**（图标按钮）：
+  - 未下载：下载图标（黑色）
+  - 下载中：旋转加载图标
+  - 已下载：勾选图标（绿色）
+- ✅ **首次下载提示**：弹窗说明图片不会缓存（仅提示一次）
+- ✅ **删除按钮**：Icon 样式统一，支持删除缓存
+- ✅ **状态持久化**：IndexedDB 存储完整文章内容
+- ✅ **智能存储**：只缓存 HTML 文本，不缓存外部图片（节省空间）
 
 ### 3. E-ink 优化阅读器
 
@@ -89,16 +114,92 @@ eink-it-pwa/
   ```
 - ✅ **隐藏滚动条**: 移除视觉杂乱
 - ✅ **离散分页**: 即时滚动（非平滑），减少重绘
-- ✅ **大点击区域**: 左右各 32% 宽度，适合电子设备点击
+- ✅ **大点击区域**: 左右各 32% 宽度，适合触屏点击
 - ✅ **高对比度**: 纯黑纯白（#000 / #fff）
 - ✅ **智能 UI 自隐藏**:
   - 头部/底部 3 秒后自动隐藏
   - 顶部 40% 热区点击恢复
   - 最大化内容显示区域
+- ✅ **图片优雅降级**（⭐ 新增）:
+  - 加载失败时显示虚线占位框
+  - 显示 alt 文本或默认提示
+  - 离线模式友好提示
+
+#### 离线阅读支持（⭐ 新增）
+- ✅ **网络优先策略**: 在线时优先加载最新内容
+- ✅ **离线回退**: 网络失败时自动从 IndexedDB 加载
+- ✅ **离线徽章**: Header 显示 "Offline" 橙色徽章
+- ✅ **增强网络检测**:
+  - 主动探测连接（不依赖 `navigator.onLine`）
+  - 定期检查网络状态（15秒）
+  - 自动更新离线徽章
 
 ---
 
 ## 🔧 技术实现
+
+### PWA 离线架构（⭐ 核心）
+
+#### Service Worker 缓存策略
+
+```javascript
+// 三种缓存策略
+const STATIC_CACHE = 'eink-it-static-v1';    // 静态资源
+const ARTICLE_CACHE = 'eink-it-articles-v1'; // API 响应
+const FONT_CACHE = 'eink-it-fonts-v1';       // CDN 字体
+
+// 策略 1: Cache First（静态资源）
+// HTML, CSS, JS → 优先从缓存读取，失败则网络请求
+
+// 策略 2: Network First（Supabase API）
+// 文章数据 → 优先网络请求，失败则从缓存读取
+
+// 策略 3: Stale While Revalidate（CDN 字体）
+// 立即返回缓存，后台更新
+```
+
+#### IndexedDB 离线存储
+
+```javascript
+// 数据库结构
+const DB_NAME = 'eink-it-offline';
+const STORE_NAME = 'articles';
+
+// 存储内容
+{
+  id: 'uuid',
+  user_id: 'uuid',
+  title: 'Article Title',
+  content: '<html>...</html>',  // 完整 HTML
+  byline: 'Author Name',
+  site_name: 'Website',
+  created_at: '2024-12-05'
+}
+
+// 存储限制
+- IndexedDB: 磁盘可用空间的 60%（Chrome/Edge）
+- 实际可存储：数百至数千篇文章
+- 平均单篇：50-200 KB
+```
+
+#### 增强网络检测
+
+```javascript
+async function probeConnectivity() {
+  // 不依赖 navigator.onLine（不可靠）
+  // 主动 fetch Google 204 端点测试真实连接
+  const response = await fetch('https://www.gstatic.com/generate_204', {
+    method: 'GET',
+    cache: 'no-store',
+    mode: 'no-cors'
+  });
+
+  return response.ok;
+}
+
+// 定期检查（15秒）+ 事件监听
+startConnectivityMonitor(15000);
+```
 
 ### 分页算法核心逻辑
 
@@ -277,8 +378,8 @@ open http://localhost:8000
 
 ## 📊 项目状态
 
-**当前版本**: v1.0.0
-**状态**: ✅ 生产就绪
+**当前版本**: v2.0.0
+**状态**: ✅ 生产就绪（完整 PWA 支持）
 
 ### 已完成功能
 - [x] 用户认证系统
@@ -288,18 +389,25 @@ open http://localhost:8000
 - [x] 个性化设置
 - [x] 深色模式
 - [x] 多用户数据隔离
-- [x] PWA 离线支持
+- [x] **完整 PWA 离线支持**（⭐ v2.0）
+  - [x] Service Worker 三种缓存策略
+  - [x] IndexedDB 离线文章存储
+  - [x] 手动下载/删除按钮
+  - [x] 离线徽章指示
+  - [x] 增强网络检测
+  - [x] 图片优雅降级
+- [x] 阅读进度显示
 - [x] 响应式布局
 - [x] 本地 CDN 依赖
 
 ### 待优化功能
 - [ ] 文章搜索功能
 - [ ] 标签/分类管理
-- [ ] 阅读进度同步
-- [ ] 批量删除文章
+- [ ] 阅读进度云端同步
+- [ ] 批量操作（下载/删除）
 - [ ] 导出为 EPUB/PDF
-- [ ] 离线缓存文章内容
 - [ ] 阅读统计和热力图
+- [ ] 强制更新机制（E-ink 设备）
 
 ---
 
@@ -317,6 +425,31 @@ open http://localhost:8000
 ---
 
 ## 📝 开发日志
+
+### 2024-12-05 - v2.0.0 ⭐ PWA 完整支持
+- ✅ **Service Worker 实现**：
+  - Cache First 策略（静态资源）
+  - Network First 策略（API 请求）
+  - Stale While Revalidate（CDN 字体）
+- ✅ **IndexedDB 离线缓存**：
+  - 完整文章内容存储
+  - 手动下载/删除功能
+  - 三态按钮（未下载/下载中/已下载）
+- ✅ **增强网络检测**：
+  - 主动探测真实连接
+  - 定期检查（15秒）
+  - 自动更新离线徽章
+- ✅ **离线 UX 优化**：
+  - 未缓存文章灰显禁用
+  - 离线徽章提示（橙色）
+  - 首次下载弹窗说明
+- ✅ **图片优雅降级**：
+  - 虚线占位框
+  - 显示 alt 文本或默认提示
+  - E-ink 友好设计
+- ✅ **阅读进度显示**：
+  - 列表页显示百分比
+  - 基于页数计算
 
 ### 2024-12-04 - v1.0.0
 - ✅ 完成基础 PWA 框架
@@ -384,4 +517,4 @@ MIT License - 自由使用和修改
 
 ---
 
-*最后更新: 2024-12-04*
+*最后更新: 2024-12-05 - v2.0.0 PWA 完整离线支持*
