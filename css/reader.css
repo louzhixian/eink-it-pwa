@@ -34,8 +34,7 @@ body {
   max-width: 800px;
   margin: 0 auto;
   padding: 40px 60px;
-  padding-top: var(--header-space, 110px);   /* Reserve space so content never sits under fixed header */
-  padding-bottom: var(--footer-space, 110px); /* Reserve space so content never sits under fixed footer */
+  /* Fixed padding - header/footer will overlay content when visible */
 }
 
 /* Header Styles */
@@ -497,9 +496,9 @@ body.dark-mode #error {
 /* Click Zones for Navigation */
 .click-zone {
   position: fixed;
-  top: var(--click-zone-top, 0px);
-  bottom: var(--click-zone-bottom, 0px);
-  width: 32%; /* proportional width relative to viewport */
+  top: 25vh; /* Only active in middle 50% vertically */
+  bottom: 25vh;
+  width: 16%; /* Half of original 32% */
   cursor: pointer;
   z-index: 50;
   background: transparent;
@@ -675,7 +674,7 @@ body.dark-mode #error {
 /* Mobile responsiveness */
 @media screen and (max-width: 768px) {
   #reader-container {
-    padding: var(--header-space, 100px) 20px var(--footer-space, 70px);
+    padding: 30px 20px;
   }
 
   body {

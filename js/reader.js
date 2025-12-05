@@ -10,8 +10,6 @@ let pageOverlap = 40; // px of overlap, dynamic per computed line height
 let pageStride = 0;
 let chromeHideTimer = null;
 const CHROME_VISIBLE_MS = 4000;
-const MIN_HEADER_SPACE = 16;
-const MIN_FOOTER_SPACE = 12;
 let currentArticleId = null; // Store current article ID for progress tracking
 
 // Default settings - auto-detect Chinese language
@@ -536,73 +534,49 @@ function setupChromeVisibility() {
   const revealZone = document.getElementById('chrome-reveal-zone');
   if (!header || !footer || !revealZone) return;
 
-  const applyChromeSpace = () => {
-    const headerH = header ? header.offsetHeight : 0;
-    const footerH = footer ? footer.offsetHeight : 0;
-    const headerVisible = header && !header.classList.contains('hidden');
-    const footerVisible = footer && !footer.classList.contains('hidden');
-    const root = document.documentElement;
-
-    const headerSpace = headerVisible ? headerH : MIN_HEADER_SPACE;
-    const footerSpace = footerVisible ? footerH : MIN_FOOTER_SPACE;
-
-    root.style.setProperty('--header-space', `${headerSpace}px`);
-    root.style.setProperty('--footer-space', `${footerSpace}px`);
-    root.style.setProperty('--click-zone-top', headerVisible ? `${headerH}px` : '0px');
-    root.style.setProperty('--click-zone-bottom', footerVisible ? `${footerH}px` : '0px');
-    root.style.setProperty('--footer-height', `${footerH}px`);
-
-    if (contentElement) {
-      calculatePagination();
-      goToPage(Math.min(currentPage, totalPages));
-    }
-  };
-
   const hideChrome = () => {
     header.classList.add('hidden');
     footer.classList.add('hidden');
-    revealZone.style.pointerEvents = 'auto';
-    applyChromeSpace();
   };
 
   const showChrome = () => {
     header.classList.remove('hidden');
     footer.classList.remove('hidden');
-    revealZone.style.pointerEvents = 'none';
-    applyChromeSpace();
     if (chromeHideTimer) clearTimeout(chromeHideTimer);
     chromeHideTimer = setTimeout(hideChrome, CHROME_VISIBLE_MS);
   };
 
+  const isChromeVisible = () => {
+    return !header.classList.contains('hidden');
+  };
+
+  // Reveal zone click - toggle chrome (show when hidden, hide when visible)
   revealZone.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    showChrome();
+    if (isChromeVisible()) {
+      // Chrome is visible - hide it immediately
+      if (chromeHideTimer) clearTimeout(chromeHideTimer);
+      hideChrome();
+    } else {
+      // Chrome is hidden - show it
+      showChrome();
+    }
   });
 
   // Initial visibility then auto-hide
   showChrome();
 }
 
-// Update click zones to avoid header/footer and align reveal zone height
+// Update footer height for reveal zone
 function updateClickZones() {
-  const header = document.getElementById('reader-header');
   const footer = document.getElementById('reader-footer');
   const root = document.documentElement;
 
-  const headerH = header ? header.offsetHeight : 0;
   const footerH = footer ? footer.offsetHeight : 0;
-  const headerVisible = header && !header.classList.contains('hidden');
-  const footerVisible = footer && !footer.classList.contains('hidden');
 
-  const headerSpace = headerVisible ? headerH : MIN_HEADER_SPACE;
-  const footerSpace = footerVisible ? footerH : MIN_FOOTER_SPACE;
-
-  root.style.setProperty('--click-zone-top', headerVisible ? `${headerH}px` : '0px');
-  root.style.setProperty('--click-zone-bottom', footerVisible ? `${footerH}px` : '0px');
+  // Set footer height for reveal zone
   root.style.setProperty('--footer-height', `${footerH}px`);
-  root.style.setProperty('--header-space', `${headerSpace}px`);
-  root.style.setProperty('--footer-space', `${footerSpace}px`);
 }
 
 // Utility function to show error
