@@ -33,7 +33,7 @@ body {
   flex-direction: column;
   max-width: 800px;
   margin: 0 auto;
-  padding: 40px 60px;
+  padding: 4px 60px;
   /* Fixed padding - header/footer will overlay content when visible */
 }
 
@@ -674,7 +674,7 @@ body.dark-mode #error {
 /* Mobile responsiveness */
 @media screen and (max-width: 768px) {
   #reader-container {
-    padding: 30px 20px;
+    padding: 4px 20px;
   }
 
   body {

@@ -545,3 +545,89 @@ async function refreshCacheIfDirty() {
   const source = articlesCache.length ? articlesCache : cachedArticles;
   renderArticles(source);
 }
+
+// Version check for update notification
+async function checkForUpdates() {
+  try {
+    const response = await fetch('/version.json?' + Date.now()); // Cache bust
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const serverVersion = data.version;
+    const localVersion = localStorage.getItem('app_version');
+
+    // First time or version changed
+    if (!localVersion) {
+      // First visit, save current version
+      localStorage.setItem('app_version', serverVersion);
+    } else if (localVersion !== serverVersion) {
+      // Version changed - show update banner
+      showUpdateBanner();
+    }
+  } catch (error) {
+    console.error('Failed to check for updates:', error);
+  }
+}
+
+function showUpdateBanner() {
+  const banner = document.getElementById('update-banner');
+  if (banner) {
+    banner.style.display = 'block';
+  }
+}
+
+function hideUpdateBanner() {
+  const banner = document.getElementById('update-banner');
+  if (banner) {
+    banner.style.display = 'none';
+  }
+}
+
+// Update banner event handlers
+const refreshBtn = document.getElementById('refresh-btn');
+const dismissUpdateBtn = document.getElementById('dismiss-update');
+
+if (refreshBtn) {
+  refreshBtn.addEventListener('click', async () => {
+    // Clear all caches and reload
+    try {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+
+      // Unregister service worker
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      }
+
+      // Update version in localStorage
+      const response = await fetch('/version.json?' + Date.now());
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('app_version', data.version);
+      }
+
+      // Force hard reload
+      window.location.reload(true);
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+      window.location.reload(true);
+    }
+  });
+}
+
+if (dismissUpdateBtn) {
+  dismissUpdateBtn.addEventListener('click', () => {
+    hideUpdateBanner();
+    // Update local version to dismiss until next version change
+    fetch('/version.json?' + Date.now())
+      .then(res => res.json())
+      .then(data => localStorage.setItem('app_version', data.version))
+      .catch(err => console.error('Failed to update version:', err));
+  });
+}
+
+// Check for updates on page load
+checkForUpdates();

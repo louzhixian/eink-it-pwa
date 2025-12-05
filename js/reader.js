@@ -242,7 +242,7 @@ function calculatePagination() {
   console.log(`Pagination calculated: ${totalPages} pages, ${pageHeight}px per page, ${totalHeight}px total`);
 }
 
-// Compute overlap (px) equal to ~1 line height of content
+// Compute overlap (px) equal to ~0.5 line height of content for minimal but visible overlap
 function computeLineOverlapPx() {
   const target = contentElement || document.getElementById('reader-content') || document.body;
   const styles = window.getComputedStyle(target);
@@ -266,7 +266,8 @@ function computeLineOverlapPx() {
     lineHeight = fallbackFont * 1.4;
   }
 
-  return Math.max(Math.round(lineHeight), 8);
+  // Return 1 line height for minimal overlap
+  return Math.max(Math.round(lineHeight * 1.1), 8);
 }
 
 // Navigate to specific page

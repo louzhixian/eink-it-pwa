@@ -94,6 +94,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // NEVER cache version.json - always fetch from network for update detection
+  if (url.pathname === '/version.json') {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   // Strategy 1: Static assets - Cache First
   if (STATIC_ASSETS.some(asset => url.pathname === asset || url.pathname === asset + '/')) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
