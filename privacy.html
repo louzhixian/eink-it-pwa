@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - EZ Ink</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Favicons -->
+  <link rel="icon" href="/icons/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+
+  <!-- Windows Tile -->
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="/icons/icon-192.png">
+
+  <link rel="stylesheet" href="css/common.css">
+
+  <style>
+    body {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .privacy-container {
+      background-color: #fff;
+      border: 2px solid #000;
+      padding: 40px;
+      box-shadow: 4px 4px 0 #000;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .last-updated {
+      color: #666;
+      font-style: italic;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-top: 40px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    p {
+      margin-bottom: 15px;
+      line-height: 1.7;
+    }
+
+    ul {
+      margin: 15px 0;
+      padding-left: 25px;
+      line-height: 1.7;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    strong {
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 24px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      border: 2px solid #000;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      background: #333;
+    }
+
+    @media (max-width: 600px) {
+      .privacy-container {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="privacy-container">
+    <h1>Privacy Policy for EZ Ink</h1>
+    <p class="last-updated">Last Updated: December 2024</p>
+
+    <h2>Overview</h2>
+    <p>EZ Ink is committed to protecting your privacy. This extension and web application do not collect, store, or transmit any personal data to external servers without your explicit consent.</p>
+
+    <h2>Data Collection</h2>
+    <p><strong>We do NOT collect:</strong></p>
+    <ul>
+      <li>Personal information</li>
+      <li>Browsing history</li>
+      <li>User analytics</li>
+      <li>Usage statistics</li>
+      <li>Any form of tracking data</li>
+    </ul>
+
+    <h2>Local Storage</h2>
+    <h3>What we store locally:</h3>
+    <ul>
+      <li>Current article content (temporarily, in your browser)</li>
+      <li>Your reading preferences (font size, font family, line height)</li>
+      <li>Authentication tokens (when you choose to use cloud sync)</li>
+    </ul>
+
+    <h3>Where it's stored:</h3>
+    <ul>
+      <li>Browser extension: Data is stored locally using <code>chrome.storage.local</code></li>
+      <li>PWA application: Data is stored in IndexedDB for offline access</li>
+      <li>Cloud sync (optional): Articles you explicitly upload are stored in Supabase</li>
+      <li>Data never leaves your device unless you click "Upload" button</li>
+      <li>Local data is cleared when you uninstall the extension</li>
+    </ul>
+
+    <h2>Permissions</h2>
+
+    <h3>Storage Permission</h3>
+    <ul>
+      <li><strong>Why we need it:</strong> To save your reading preferences and article cache</li>
+      <li><strong>What we access:</strong> Only the data our extension creates</li>
+      <li><strong>Not used for:</strong> Tracking, analytics, or accessing other extension data</li>
+    </ul>
+
+    <h3>ActiveTab Permission</h3>
+    <ul>
+      <li><strong>Why we need it:</strong> To extract article content from the page you're viewing</li>
+      <li><strong>What we access:</strong> Only the current tab when you click the extension button</li>
+      <li><strong>Not used for:</strong> Background monitoring or tracking your browsing</li>
+    </ul>
+
+    <h3>Scripting Permission</h3>
+    <ul>
+      <li><strong>Why we need it:</strong> To inject content extraction scripts (Mozilla Readability.js)</li>
+      <li><strong>What we access:</strong> Current page HTML to extract article content</li>
+      <li><strong>Not used for:</strong> Modifying pages or running background scripts</li>
+    </ul>
+
+    <h3>Host Permissions</h3>
+    <ul>
+      <li><strong>Why we need it:</strong> To extract articles from any website you visit</li>
+      <li><strong>What we access:</strong> Only pages where you explicitly click the extension icon</li>
+      <li><strong>Not used for:</strong> Accessing sites you haven't opened or collecting data</li>
+    </ul>
+
+    <h2>Cloud Sync (Optional)</h2>
+    <p>When you choose to upload articles to your personal cloud library:</p>
+    <ul>
+      <li>Articles are stored in Supabase (open-source backend service)</li>
+      <li>Only articles you explicitly click "Upload" on are sent to the cloud</li>
+      <li>Data is protected with JWT authentication and row-level security</li>
+      <li>Your articles are private and only accessible to your account</li>
+      <li>You can delete your account and all data at any time</li>
+    </ul>
+
+    <h2>Third-Party Services</h2>
+
+    <h3>Web Fonts (Optional)</h3>
+    <p>When you select Chinese fonts in the reader, fonts are loaded from:</p>
+    <ul>
+      <li>jsDelivr CDN (for LxgwWenKai font)</li>
+      <li>Google Fonts (for Noto Serif SC font)</li>
+    </ul>
+    <p>These are standard font delivery services and follow their own privacy policies. No personal data is sent with font requests.</p>
+
+    <h3>Supabase (Cloud Sync Only)</h3>
+    <p>When using cloud sync:</p>
+    <ul>
+      <li>Authentication and data storage provided by Supabase</li>
+      <li>Data is encrypted in transit (HTTPS)</li>
+      <li>Follow Supabase's privacy policy: <a href="https://supabase.com/privacy" target="_blank" style="color: #000; text-decoration: underline;">https://supabase.com/privacy</a></li>
+    </ul>
+
+    <h2>Data Sharing</h2>
+    <p>We do not share, sell, or transfer any data to third parties. The only data transmission occurs when you explicitly upload articles to your personal cloud library.</p>
+
+    <h2>Children's Privacy</h2>
+    <p>This extension and application do not knowingly collect any information from anyone, including children under 13.</p>
+
+    <h2>Changes to Privacy Policy</h2>
+    <p>We may update this privacy policy occasionally. Changes will be reflected in the "Last Updated" date above. We encourage you to review this policy periodically.</p>
+
+    <h2>Contact</h2>
+    <p>For privacy concerns or questions, please:</p>
+    <ul>
+      <li>Open an issue on our GitHub repository</li>
+      <li>Email us at the address provided in the extension listing</li>
+    </ul>
+
+    <h2>Your Rights</h2>
+    <p>You have full control over your data:</p>
+    <ul>
+      <li>All local data is stored in your browser under your control</li>
+      <li>You can clear extension data anytime through browser settings</li>
+      <li>You can delete your cloud account and all uploaded articles</li>
+      <li>Uninstalling the extension removes all locally stored data</li>
+      <li>You can use the extension without cloud sync (local-only mode)</li>
+    </ul>
+
+    <h2>Compliance</h2>
+    <p>This extension and application comply with:</p>
+    <ul>
+      <li>Chrome Web Store Developer Program Policies</li>
+      <li>Firefox Add-on Policies</li>
+      <li>General Data Protection Regulation (GDPR)</li>
+      <li>California Consumer Privacy Act (CCPA)</li>
+    </ul>
+
+    <h2>Open Source</h2>
+    <p>EZ Ink is open source. You can review the complete source code to verify our privacy practices on GitHub.</p>
+
+    <a href="/" class="back-link">Back to Login</a>
+  </div>
+</body>
+</html>
