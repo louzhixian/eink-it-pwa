@@ -65,6 +65,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     }
 
     // 登录成功，跳转到文章列表
+    trackEvent('login', { method: 'email' });
     showMessage('Login successful! Redirecting...', 'success');
     setTimeout(() => {
       window.location.href = 'list.html';
@@ -72,6 +73,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
   } catch (error) {
     console.error('Login error:', error);
+    trackEvent('login_failed', { error_message: error.message });
     showMessage(error.message || 'Login failed. Please try again.', 'error');
     submitBtn.disabled = false;
     submitBtn.textContent = 'Login';
@@ -143,6 +145,8 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
     }
 
     // 注册成功
+    trackEvent('signup', { method: 'email', has_invitation: true });
+
     // 注意：Supabase 可能需要邮箱验证，取决于配置
     if (data.user && !data.session) {
       showMessage('Please check your email to confirm your account', 'success');
@@ -157,6 +161,7 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
 
   } catch (error) {
     console.error('Signup error:', error);
+    trackEvent('signup_failed', { error_message: error.message });
     showMessage(error.message || 'Sign up failed. Please try again.', 'error');
     submitBtn.disabled = false;
     submitBtn.textContent = 'Sign Up';

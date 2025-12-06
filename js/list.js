@@ -70,6 +70,9 @@ async function loadArticles() {
 
     articlesCache = articles || [];
 
+    // Track article list loaded
+    trackEvent('article_list_loaded', { count: articlesCache.length });
+
     // 隐藏加载状态
     loadingEl.style.display = 'none';
 
@@ -248,6 +251,7 @@ function getReadingProgressPercent(articleId) {
 
 // 打开文章阅读器
 function openArticle(id) {
+  trackEvent('article_view', { article_id: id });
   window.location.href = `reader.html?id=${id}`;
 }
 
@@ -283,6 +287,7 @@ async function handleDeleteConfirmed() {
       throw error;
     }
 
+    trackEvent('article_delete', { article_id: pendingDeleteId });
     articlesCache = articlesCache.filter(article => article.id !== pendingDeleteId);
     renderArticles(articlesCache);
     closeDeleteConfirm();
@@ -318,6 +323,7 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   const confirmed = confirm('Are you sure you want to logout?');
 
   if (confirmed) {
+    trackEvent('logout');
     await supabase.auth.signOut();
     window.location.href = 'index.html';
   }
@@ -423,6 +429,7 @@ async function downloadArticleToCache(articleId, button) {
     // Update button to downloaded state
     updateDownloadButton(button, 'downloaded');
 
+    trackEvent('article_download_offline', { article_id: articleId });
     console.log('Article downloaded successfully');
   } catch (error) {
     console.error('Download failed:', error);
@@ -439,6 +446,7 @@ async function removeArticleFromCache(articleId, button) {
     cachedArticleIds.delete(articleId);
     localStorage.setItem('offline_cache_dirty', 'true');
     updateDownloadButton(button, 'not-downloaded');
+    trackEvent('article_remove_offline', { article_id: articleId });
     console.log('Article removed from offline cache:', articleId);
   } catch (error) {
     console.error('Failed to remove article from cache:', error);

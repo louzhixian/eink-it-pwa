@@ -752,6 +752,13 @@ function setupSettingsPanel() {
     saveSettings(newSettings);
     applySettings(newSettings);
 
+    // Track settings change
+    trackEvent('reader_settings_change', {
+      font_size: newSettings.fontSize,
+      font_family: newSettings.fontFamily,
+      line_height: newSettings.lineHeight
+    });
+
     // Recalculate pagination with new settings
     setTimeout(() => {
       calculatePagination();
@@ -779,6 +786,9 @@ function setupDarkMode() {
     // Save and apply
     saveSettings(settings);
     applySettings(settings);
+
+    // Track dark mode toggle
+    trackEvent('dark_mode_toggle', { enabled: settings.darkMode });
 
     console.log('Dark mode toggled:', settings.darkMode);
   });

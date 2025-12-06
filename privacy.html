@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy - EZ Ink</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-R5YYL4FKN4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-R5YYL4FKN4');
+  </script>
+
   <link rel="manifest" href="manifest.json">
 
   <!-- Favicons -->
@@ -121,11 +131,16 @@
     <h2>Data Collection</h2>
     <p><strong>We do NOT collect:</strong></p>
     <ul>
-      <li>Personal information</li>
+      <li>Personal information (email, passwords, etc. - see Cloud Sync section)</li>
       <li>Browsing history</li>
-      <li>User analytics</li>
-      <li>Usage statistics</li>
-      <li>Any form of tracking data</li>
+      <li>Article content you view or save</li>
+    </ul>
+
+    <p><strong>What we collect (PWA only):</strong></p>
+    <ul>
+      <li>Anonymous usage analytics via Google Analytics (see Third-Party Services)</li>
+      <li>No personally identifiable information (PII) is included in analytics</li>
+      <li>Browser extension does NOT use analytics</li>
     </ul>
 
     <h2>Local Storage</h2>
@@ -186,6 +201,35 @@
     </ul>
 
     <h2>Third-Party Services</h2>
+
+    <h3>Google Analytics (PWA Only)</h3>
+    <p>The web application (PWA) uses Google Analytics 4 to collect anonymous usage statistics to help improve the service. The browser extension does NOT use any analytics.</p>
+
+    <p><strong>What we track:</strong></p>
+    <ul>
+      <li>Page views and navigation patterns</li>
+      <li>Feature usage (login, article uploads, downloads, reading settings changes)</li>
+      <li>Error occurrences to help with debugging</li>
+    </ul>
+
+    <p><strong>What we do NOT track:</strong></p>
+    <ul>
+      <li>Email addresses or passwords</li>
+      <li>Article content or titles</li>
+      <li>Personal identifying information</li>
+      <li>Cross-site activity or browsing history</li>
+    </ul>
+
+    <p><strong>Data sanitization:</strong> All analytics events are automatically sanitized to remove sensitive fields (email, passwords, tokens, user IDs) before being sent to Google Analytics.</p>
+
+    <p>Google Analytics follows its own privacy policy: <a href="https://policies.google.com/privacy" target="_blank" style="color: #000; text-decoration: underline;">https://policies.google.com/privacy</a></p>
+
+    <p>You can opt out of Google Analytics by:</p>
+    <ul>
+      <li>Using browser extensions like uBlock Origin or Privacy Badger</li>
+      <li>Installing the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" style="color: #000; text-decoration: underline;">Google Analytics Opt-out Browser Add-on</a></li>
+      <li>Enabling "Do Not Track" in your browser settings</li>
+    </ul>
 
     <h3>Web Fonts (Optional)</h3>
     <p>When you select Chinese fonts in the reader, fonts are loaded from:</p>
