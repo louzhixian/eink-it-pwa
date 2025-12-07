@@ -359,8 +359,9 @@ function previousPage() {
 
 // Setup navigation listeners
 function setupNavigation() {
-  // Keyboard navigation
+  // Keyboard navigation (including volume keys for mobile e-ink devices)
   document.addEventListener('keydown', (e) => {
+    // Standard keyboard navigation
     if (e.key === 'ArrowRight' || e.key === 'PageDown') {
       e.preventDefault();
       nextPage();
@@ -373,6 +374,17 @@ function setupNavigation() {
     } else if (e.key === 'End') {
       e.preventDefault();
       goToPage(totalPages);
+    }
+    // Volume keys for e-ink devices (Kindle, Kobo, etc.)
+    // Note: Not all browsers/devices allow capturing volume keys
+    else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown') {
+      e.preventDefault();
+      nextPage();
+      console.log('[Volume Key] Next page triggered');
+    } else if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
+      e.preventDefault();
+      previousPage();
+      console.log('[Volume Key] Previous page triggered');
     }
   });
 
