@@ -386,6 +386,26 @@ document.getElementById('clear-cache-btn').addEventListener('click', async () =>
   }
 });
 
+// 绑定 Mock E2EE 按钮 (Feature Request Tracking)
+const e2eeBtn = document.getElementById('e2ee-btn');
+if (e2eeBtn) {
+  e2eeBtn.addEventListener('click', () => {
+    // Track interest
+    trackEvent('feature_request', {
+      feature: 'e2ee_data_password',
+      source: 'settings_modal'
+    });
+
+    // Show mock feedback
+    alert(
+      'Coming Soon!\n\n' +
+      'End-to-End Encryption (E2EE) is currently under development.\n' +
+      'This feature will allow you to set a private Data Password so only YOU can read your articles.\n\n' +
+      'Thanks for expressing interest! We will notify you when it is ready.'
+    );
+  });
+}
+
 // 绑定删除确认弹窗
 deleteCancelBtn.addEventListener('click', closeDeleteConfirm);
 deleteConfirmBtn.addEventListener('click', handleDeleteConfirmed);
