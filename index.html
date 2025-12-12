@@ -69,6 +69,19 @@
     <p style="margin-top: 30px; text-align: center; font-size: 13px; color: #666;">
       By signing up, you agree to our <a href="/privacy.html" target="_blank" style="color: #000; text-decoration: underline;">Privacy Policy</a>
     </p>
+
+    <!-- Update/Repair Footer -->
+    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #999;">
+      <span id="app-version">v0.0.4</span> | 
+      <a href="#" id="reset-app-btn" style="color: #999; text-decoration: none; border-bottom: 1px dashed #999;">Repair/Reset App</a>
+    </div>
+
+    <!-- Update Banner (Hidden by default) -->
+    <div id="update-banner" style="display: none; background: #333; color: white; padding: 10px; text-align: center; position: fixed; bottom: 0; left: 0; right: 0;">
+      <span>New version available</span>
+      <button id="refresh-btn" style="margin-left: 10px; padding: 4px 8px; font-size: 12px; cursor: pointer;">Refresh</button>
+      <button id="dismiss-update" style="margin-left: 5px; padding: 4px 8px; font-size: 12px; cursor: pointer; background: transparent; color: #aaa; border: none;">Dismiss</button>
+    </div>
   </div>
 
   <script src="lib/supabase.js"></script>

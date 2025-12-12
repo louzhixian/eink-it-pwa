@@ -19,6 +19,12 @@ let cachedArticles = [];
 
 // 检查登录状态并获取用户信息
 async function checkAuth() {
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    window.location.href = 'index.html';
+    return null;
+  }
+
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {

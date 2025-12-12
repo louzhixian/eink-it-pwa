@@ -2,12 +2,21 @@
 initSupabase();
 
 // 检查是否已登录
+// 检查是否已登录
 async function checkAuthStatus() {
-  const { data: { session } } = await supabase.auth.getSession();
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    showMessage('Error: Could not initialize login service. Please refresh the page.', 'error');
+    return;
+  }
 
-  if (session) {
-    // 已登录，跳转到文章列表页
-    window.location.href = 'list.html';
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      window.location.href = 'list.html';
+    }
+  } catch (err) {
+    console.error('Error checking auth status:', err);
   }
 }
 
@@ -55,6 +64,8 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   submitBtn.textContent = 'Logging in...';
 
   try {
+    if (!supabase) throw new Error('Service not initialized');
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -170,3 +181,115 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
 
 // 页面加载时检查登录状态
 checkAuthStatus();
+
+// ==========================================
+// Update & Cache Management (Copied from list.js to ensure availability on login)
+// ==========================================
+
+// Version check for update notification
+async function checkForUpdates() {
+  try {
+    const response = await fetch('/version.json?' + Date.now()); // Cache bust
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const serverVersion = data.version;
+    const localVersion = localStorage.getItem('app_version');
+
+    // Update version display if element exists
+    const versionEl = document.getElementById('app-version');
+    if (versionEl) {
+      versionEl.textContent = 'v' + (localVersion || serverVersion);
+    }
+
+    // First time or version changed
+    if (!localVersion) {
+      localStorage.setItem('app_version', serverVersion);
+    } else if (localVersion !== serverVersion) {
+      showUpdateBanner();
+    }
+  } catch (error) {
+    console.error('Failed to check for updates:', error);
+  }
+}
+
+function showUpdateBanner() {
+  const banner = document.getElementById('update-banner');
+  if (banner) {
+    banner.style.display = 'block';
+  }
+}
+
+function hideUpdateBanner() {
+  const banner = document.getElementById('update-banner');
+  if (banner) {
+    banner.style.display = 'none';
+  }
+}
+
+async function clearCacheAndReload() {
+  try {
+    console.log('Clearing all caches...');
+
+    // Delete all caches
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map(name => caches.delete(name)));
+
+    // Clear localStorage (except auth session and offline notices)
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      // Keep Supabase auth
+      if (!key.startsWith('sb-') && key !== 'offline_image_notice_shown') {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    // Unregister service worker
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+    }
+
+    // Force reload
+    window.location.reload(true);
+  } catch (error) {
+    console.error('Failed to clear cache:', error);
+    window.location.reload(true);
+  }
+}
+
+// Bind Update Banner Buttons
+const refreshBtn = document.getElementById('refresh-btn');
+const dismissUpdateBtn = document.getElementById('dismiss-update');
+
+if (refreshBtn) {
+  refreshBtn.addEventListener('click', clearCacheAndReload);
+}
+
+if (dismissUpdateBtn) {
+  dismissUpdateBtn.addEventListener('click', () => {
+    hideUpdateBanner();
+    fetch('/version.json?' + Date.now())
+      .then(res => res.json())
+      .then(data => localStorage.setItem('app_version', data.version))
+      .catch(console.error);
+  });
+}
+
+// Bind Repair/Reset Button
+const resetAppBtn = document.getElementById('reset-app-btn');
+if (resetAppBtn) {
+  resetAppBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('This will clear all data (except your login) and reload the app. Use this if the app is stuck or not updating properly.')) {
+      clearCacheAndReload();
+    }
+  });
+}
+
+// Check for updates immediately
+checkForUpdates();
