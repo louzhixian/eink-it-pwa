@@ -328,8 +328,15 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
 
   if (confirmed) {
     trackEvent('logout');
-    await supabase.auth.signOut();
-    window.navigateTo('index');
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      // Force clear local storage to ensure redirect works
+      localStorage.removeItem('sb-auth-token');
+      window.navigateTo('index');
+    }
   }
 });
 
