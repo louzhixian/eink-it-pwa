@@ -95,3 +95,11 @@ function startConnectivityMonitor(intervalMs = 15000) {
 }
 
 startConnectivityMonitor();
+
+// Environment-aware navigation helper
+// Handles clean URLs (Cloudflare) vs .html extensions (Localhost)
+window.navigateTo = function (page, params = '') {
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const path = isLocal ? `${page}.html` : `./${page}`;
+  window.location.href = params ? `${path}${params}` : path;
+};

@@ -21,15 +21,13 @@ let cachedArticles = [];
 async function checkAuth() {
   if (!supabase) {
     console.error('Supabase client not initialized');
-    window.location.href = 'index.html';
+    window.navigateTo('index');
     return null;
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-
   if (!session) {
-    // 未登录，跳转到登录页
-    window.location.href = 'index.html';
+    window.navigateTo('index');
     return null;
   }
 
@@ -258,7 +256,7 @@ function getReadingProgressPercent(articleId) {
 // 打开文章阅读器
 function openArticle(id) {
   trackEvent('article_view', { article_id: id });
-  window.location.href = `reader.html?id=${id}`;
+  window.navigateTo('reader', `?id=${id}`);
 }
 
 function openDeleteConfirm(id, title) {
@@ -331,7 +329,7 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   if (confirmed) {
     trackEvent('logout');
     await supabase.auth.signOut();
-    window.location.href = 'index.html';
+    window.navigateTo('index');
   }
 });
 

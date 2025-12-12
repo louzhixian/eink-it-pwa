@@ -30,7 +30,7 @@ async function initReader() {
     // Check authentication
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      window.location.href = 'index.html';
+      window.navigateTo('index');
       return;
     }
 
@@ -180,7 +180,7 @@ function setupImageErrorHandling() {
 
   images.forEach(img => {
     // Add error handler to mark broken images
-    img.addEventListener('error', function() {
+    img.addEventListener('error', function () {
       console.log('Image failed to load:', this.src);
       markBroken(this);
     }, { passive: true });
@@ -461,7 +461,7 @@ function setupBackButton() {
   if (backBtn) {
     backBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      window.location.href = 'list.html';
+      window.navigateTo('list');
     });
   }
 }

@@ -2,7 +2,7 @@
 initSupabase();
 
 // 检查是否已登录
-// 检查是否已登录
+
 async function checkAuthStatus() {
   if (!supabase) {
     console.error('Supabase client not initialized');
@@ -13,7 +13,8 @@ async function checkAuthStatus() {
   try {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      window.location.href = 'list.html';
+      // Determines correct path based on environment
+      window.navigateTo('list');
     }
   } catch (err) {
     console.error('Error checking auth status:', err);
@@ -79,7 +80,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     trackEvent('login', { method: 'email' });
     showMessage('Login successful! Redirecting...', 'success');
     setTimeout(() => {
-      window.location.href = 'list.html';
+      window.navigateTo('list');
     }, 500);
 
   } catch (error) {
@@ -166,7 +167,7 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
     } else {
       showMessage('Sign up successful! Redirecting...', 'success');
       setTimeout(() => {
-        window.location.href = 'list.html';
+        window.navigateTo('list');
       }, 500);
     }
 

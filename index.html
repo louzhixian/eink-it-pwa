@@ -42,16 +42,17 @@
   <link rel="manifest" href="manifest.json">
 
   <!-- Favicons -->
-  <link rel="icon" href="/icons/favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
-  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" href="icons/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
 
   <!-- Apple Touch Icons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 
   <!-- Windows Tile -->
   <meta name="msapplication-TileColor" content="#000000">
-  <meta name="msapplication-TileImage" content="/icons/icon-192.png">
+  <meta name="msapplication-TileImage" content="icons/icon-192.png">
+
 
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/login.css">
@@ -93,7 +94,7 @@
     </p>
 
     <p style="margin-top: 30px; text-align: center; font-size: 13px; color: #666;">
-      By signing up, you agree to our <a href="/privacy.html" target="_blank"
+      By signing up, you agree to our <a href="#" onclick="event.preventDefault(); window.navigateTo('privacy');"
         style="color: #000; text-decoration: underline;">Privacy Policy</a>
     </p>
 
@@ -118,6 +119,7 @@
   <script src="lib/supabase.js"></script>
   <script src="js/config.js"></script>
   <script src="js/analytics.js"></script>
+  <script src="js/common.js"></script>
   <script src="js/auth.js"></script>
 
   <!-- Service Worker Registration -->
